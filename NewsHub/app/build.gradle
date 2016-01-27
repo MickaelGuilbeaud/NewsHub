@@ -1,4 +1,19 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.fernandocejas.frodo:frodo-plugin:0.8.2"
+    }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.fernandocejas.frodo'
+
+//def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
+def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"))
 
 android {
     compileSdkVersion 23
@@ -8,19 +23,134 @@ android {
         applicationId "com.newshub"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+
+        def versionMajor = 0
+        def versionMinor = 0
+        def versionPatch = 0
+
+        versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+
+        //buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
+        buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
     }
+
     buildTypes {
+        def BOOLEAN = "boolean"
+        def TRUE = "true"
+        def FALSE = "false"
+        def REPORT_CRASHES = "REPORT_CRASHES"
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            resValue "string", "app_name", "NewsHub (debug)"
+
+            buildConfigField BOOLEAN, REPORT_CRASHES, FALSE
+        }
+        beta {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            applicationIdSuffix ".beta"
+            versionNameSuffix "-beta"
+            resValue "string", "app_name", "NewsHub (beta)"
+
+            buildConfigField BOOLEAN, REPORT_CRASHES, TRUE
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            resValue "string", "app_name", "NewsHub"
+
+            buildConfigField BOOLEAN, REPORT_CRASHES, TRUE
         }
     }
+
+    testOptions.unitTests.all {
+        testLogging {
+            events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+            outputs.upToDateWhen { false }
+            showStandardStreams = true
+        }
+    }
+
+}
+
+ext {
+    // Android
+    androidBuildToolsVersion = "23.0.2"
+    androidMinSdkVersion = 21
+    androidTargetSdkVersion = 23
+    androidCompileSdkVersion = 23
+
+    // Libraries versions
+    // Base
+    supportVersion = '23.1.1'
+
+    // Images
+    glideVersion = '3.6.1'
+
+    // Logging
+    timberVersion = '4.1.0'
+
+    // Injections
+    daggerVersion = '2.0.2'
+    butterKnifeVersion = '7.0.1'
+
+    // Reactive
+    rxJavaVersion = '1.0.15'
+    rxAndroidVersion = '1.0.1'
+
+    // Network
+    retrofitVersion = '2.0.0-beta2'
+    okHttpVersion = '2.6.0'
+    okHttpLoggingVersion = '2.6.0'
+
+    // Annotation
+    javaxAnnotationVersion = '1.0'
+    androidAnnotationsVersion = '20.0.0'
+
+    // Jackson
+    jacksonDatabindVersion = '2.6.0'
+
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Dagger 2 compiler
+    apt "com.google.dagger:dagger-compiler:${daggerVersion}"
+
+    compile "com.android.support:design:${supportVersion}"
+    compile "com.android.support:recyclerview-v7:${supportVersion}"
+    compile "com.android.support:support-annotations:${supportVersion}"
+
+    compile "com.github.bumptech.glide:glide:${glideVersion}"
+
+    compile "com.jakewharton.timber:timber:${timberVersion}"
+
+    compile "com.google.dagger:dagger:${daggerVersion}"
+    compile "com.jakewharton:butterknife:${butterKnifeVersion}"
+
+    compile "io.reactivex:rxjava:${rxJavaVersion}"
+    compile "io.reactivex:rxandroid:${rxAndroidVersion}"
+
+    compile "com.squareup.okhttp:okhttp:${okHttpVersion}"
+    compile "com.squareup.okhttp:logging-interceptor:${okHttpLoggingVersion}"
+
+    compile "com.squareup.retrofit:retrofit:${retrofitVersion}"
+    compile "com.squareup.retrofit:converter-jackson:${retrofitVersion}"
+    compile "com.squareup.retrofit:adapter-rxjava:${retrofitVersion}"
+
+    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
+
+    // Used by Dagger 2
+    provided "javax.annotation:jsr250-api:${javaxAnnotationVersion}"
+
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
 }
