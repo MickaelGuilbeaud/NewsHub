@@ -2,11 +2,13 @@ package com.newshub.presentation.common;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
 import com.newshub.BuildConfig;
 import com.newshub.presentation.common.dependencyinjection.components.ApplicationComponent;
 import com.newshub.presentation.common.dependencyinjection.components.DaggerApplicationComponent;
 import com.newshub.presentation.common.dependencyinjection.modules.ApplicationModule;
 
+import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 /**
@@ -33,9 +35,9 @@ public class NewsHubApplication extends Application {
         application = this;
 
         // Init Crashlytics
-//        if (BuildConfig.ENABLE_CRASHLYTICS) {
-//            Fabric.with(this, new Crashlytics());
-//        }
+        if (BuildConfig.REPORT_CRASHES) {
+            Fabric.with(this, new Crashlytics());
+        }
 
         // Inject Application Component
         initializeInjector();
