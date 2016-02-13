@@ -1,0 +1,236 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url 'https://maven.fabric.io/public' }
+    }
+    dependencies {
+        classpath "com.fernandocejas.frodo:frodo-plugin:0.8.2"
+        classpath 'io.fabric.tools:gradle:1.21.2'
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'io.fabric'
+apply plugin: 'com.fernandocejas.frodo'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+//def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
+def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"))
+
+// Load keystore
+def keystorePropertiesFile = file("signing.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "com.newshub"
+        minSdkVersion 16
+        targetSdkVersion 23
+
+        def versionMajor = 0
+        def versionMinor = 0
+        def versionPatch = 0
+
+        versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+
+        //buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
+        buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
+    }
+
+    signingConfigs {
+        beta {
+            storeFile file(keystoreProperties['STORE_FILE'])
+            storePassword keystoreProperties['STORE_PASSWORD']
+            keyAlias keystoreProperties['KEY_ALIAS']
+            keyPassword keystoreProperties['KEY_PASSWORD']
+        }
+        release {
+            storeFile file(keystoreProperties['STORE_FILE'])
+            storePassword keystoreProperties['STORE_PASSWORD']
+            keyAlias keystoreProperties['KEY_ALIAS']
+            keyPassword keystoreProperties['KEY_PASSWORD']
+        }
+    }
+
+    buildTypes {
+        def BOOLEAN = "boolean"
+        def TRUE = "true"
+        def FALSE = "false"
+        def REPORT_CRASHES = "REPORT_CRASHES"
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            resValue "string", "app_name", "NewsHub (debug)"
+
+            // Disable Crashlytics
+            buildConfigField BOOLEAN, REPORT_CRASHES, FALSE
+            ext.enableCrashlytics = false
+        }
+        beta {
+            signingConfig signingConfigs.beta
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            applicationIdSuffix ".beta"
+            versionNameSuffix "-beta"
+            resValue "string", "app_name", "NewsHub (beta)"
+
+            // Enable Crashlytics
+            buildConfigField BOOLEAN, REPORT_CRASHES, TRUE
+            ext.enableCrashlytics = true
+        }
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            resValue "string", "app_name", "NewsHub"
+
+            // Enable Crashlytics
+            buildConfigField BOOLEAN, REPORT_CRASHES, TRUE
+            ext.enableCrashlytics = true
+        }
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    testOptions.unitTests.all {
+        testLogging {
+            events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+            outputs.upToDateWhen { false }
+            showStandardStreams = true
+        }
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/ASL2.0'
+    }
+
+}
+
+kapt {
+    generateStubs = true
+}
+
+ext {
+    // Android
+    androidBuildToolsVersion = "23.0.2"
+    androidMinSdkVersion = 21
+    androidTargetSdkVersion = 23
+    androidCompileSdkVersion = 23
+
+    // Libraries versions
+    // Base
+    supportVersion = '23.1.1'
+
+    // Images
+    glideVersion = '3.6.1'
+
+    // Logging
+    timberVersion = '4.1.0'
+
+    // Injections
+    daggerVersion = '2.0.2'
+    butterKnifeVersion = '7.0.1'
+
+    // Reactive
+    rxJavaVersion = '1.0.15'
+    rxAndroidVersion = '1.0.1'
+
+    // Network
+    retrofitVersion = '2.0.0-beta2'
+    okHttpVersion = '2.6.0'
+    okHttpLoggingVersion = '2.6.0'
+
+    // Annotation
+    javaxAnnotationVersion = '1.0'
+    androidAnnotationsVersion = '20.0.0'
+
+    // Jackson
+    jacksonDatabindVersion = '2.6.0'
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Kotlin dependencies
+    compile "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
+
+    // Dagger 2 compiler
+    compile "com.google.dagger:dagger:${daggerVersion}"
+    kapt "com.google.dagger:dagger-compiler:${daggerVersion}"
+    provided 'org.glassfish:javax.annotation:10.0-b28'
+
+    compile "com.android.support:design:${supportVersion}"
+    compile "com.android.support:recyclerview-v7:${supportVersion}"
+    compile "com.android.support:support-annotations:${supportVersion}"
+
+    compile "com.github.bumptech.glide:glide:${glideVersion}"
+
+    compile "com.jakewharton.timber:timber:${timberVersion}"
+
+    compile "com.jakewharton:butterknife:${butterKnifeVersion}"
+
+    compile "io.reactivex:rxjava:${rxJavaVersion}"
+    compile "io.reactivex:rxandroid:${rxAndroidVersion}"
+
+    compile "com.squareup.okhttp:okhttp:${okHttpVersion}"
+    compile "com.squareup.okhttp:logging-interceptor:${okHttpLoggingVersion}"
+
+    compile "com.squareup.retrofit:retrofit:${retrofitVersion}"
+    compile "com.squareup.retrofit:converter-jackson:${retrofitVersion}"
+    compile "com.squareup.retrofit:adapter-rxjava:${retrofitVersion}"
+
+    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+        transitive = true
+    }
+
+    testCompile 'junit:junit:4.12'
+}
+
+afterEvaluate {
+    initCrashlyticsPropertiesIfNeeded()
+}
+
+def initCrashlyticsPropertiesIfNeeded() {
+    def propertiesFile = file('fabric.properties')
+    if (!propertiesFile.exists()) {
+        def commentMessage = "This is autogenerated crashlytics property from system environment to prevent key to be committed to source control."
+        ant.propertyfile(file: "fabric.properties", comment: commentMessage) {
+            entry(key: "apiSecret", value: keystoreProperties['CRASHLYTICS_API_SECRET'])
+            entry(key: "apiKey", value: keystoreProperties['CRASHLYTICS_API_KEY'])
+        }
+    }
+}
