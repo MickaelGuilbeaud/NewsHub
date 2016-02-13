@@ -7,18 +7,19 @@ buildscript {
     dependencies {
         classpath "com.fernandocejas.frodo:frodo-plugin:0.8.2"
         classpath 'io.fabric.tools:gradle:1.21.2'
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
+apply plugin: 'com.fernandocejas.frodo'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
-
-apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'com.fernandocejas.frodo'
 
 //def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
 def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"))
@@ -107,6 +108,10 @@ android {
         }
     }
 
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
     testOptions.unitTests.all {
         testLogging {
             events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
@@ -130,6 +135,10 @@ android {
         exclude 'META-INF/ASL2.0'
     }
 
+}
+
+kapt {
+    generateStubs = true
 }
 
 ext {
@@ -174,8 +183,13 @@ ext {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
+    // Kotlin dependencies
+    compile "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
+
     // Dagger 2 compiler
-    apt "com.google.dagger:dagger-compiler:${daggerVersion}"
+    compile "com.google.dagger:dagger:${daggerVersion}"
+    kapt "com.google.dagger:dagger-compiler:${daggerVersion}"
+    provided 'org.glassfish:javax.annotation:10.0-b28'
 
     compile "com.android.support:design:${supportVersion}"
     compile "com.android.support:recyclerview-v7:${supportVersion}"
@@ -185,7 +199,6 @@ dependencies {
 
     compile "com.jakewharton.timber:timber:${timberVersion}"
 
-    compile "com.google.dagger:dagger:${daggerVersion}"
     compile "com.jakewharton:butterknife:${butterKnifeVersion}"
 
     compile "io.reactivex:rxjava:${rxJavaVersion}"
@@ -203,9 +216,6 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true
     }
-
-    // Used by Dagger 2
-    provided "javax.annotation:jsr250-api:${javaxAnnotationVersion}"
 
     testCompile 'junit:junit:4.12'
 }
