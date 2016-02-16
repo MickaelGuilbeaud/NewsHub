@@ -1,3 +1,11 @@
 <resources>
 
+    <!-- region General -->
+    <string name="application_name">NewsHub</string>
+    <!-- endregion -->
+
+    <!-- region Menu -->
+    <string name="menu_action_customize">Customize</string>
+    <!-- endregion -->
+    
 </resources>
