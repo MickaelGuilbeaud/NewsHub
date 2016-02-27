@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="@dimen/space_card_edge"
+    android:layout_marginLeft="@dimen/space_card_edge"
+    android:layout_marginRight="@dimen/space_card_edge"
+    android:layout_marginStart="@dimen/space_card_edge"
+    card_view:cardCornerRadius="@dimen/card_rounded_corners">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/space_card_main_bottom"
+        android:paddingEnd="@dimen/space_card_start"
+        android:paddingLeft="@dimen/space_card_start"
+        android:paddingRight="@dimen/space_card_start"
+        android:paddingStart="@dimen/space_card_start"
+        android:paddingTop="@dimen/space_card_title_top">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/space_card_title_bottom"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            tools:text="Architecting Android... The clean way?"
+            />
+
+        <TextView
+            android:id="@+id/tvMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            tools:text="The purpose of it is to show you a little approach I had in mind in the last few months plus all the stuff I have learnt from investigating and implementing it."
+            />
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

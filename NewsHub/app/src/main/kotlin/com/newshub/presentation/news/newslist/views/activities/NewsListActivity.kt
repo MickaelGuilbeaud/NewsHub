@@ -5,7 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.newshub.R
 import com.newshub.presentation.common.views.BaseActivity
-import kotlinx.android.synthetic.main.activity_news_list.*
+import com.newshub.presentation.news.newslist.views.fragments.NewsListFragment
 import kotlinx.android.synthetic.main.toolbar.*
 
 /**
@@ -19,6 +19,10 @@ class NewsListActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_news_list)
         setSupportActionBar(mToolbar);
+
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.flFragmentContainer, NewsListFragment.newInstance(), NewsListFragment.TAG)
+                .commit()
     }
 
     // endregion

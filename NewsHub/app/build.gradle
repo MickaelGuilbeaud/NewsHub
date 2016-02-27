@@ -165,6 +165,7 @@ ext {
     // Reactive
     rxJavaVersion = '1.0.15'
     rxAndroidVersion = '1.0.1'
+    rxKotlinVersion = '0.40.1'
 
     // Network
     retrofitVersion = '2.0.0-beta2'
@@ -193,6 +194,7 @@ dependencies {
 
     compile "com.android.support:design:${supportVersion}"
     compile "com.android.support:recyclerview-v7:${supportVersion}"
+    compile "com.android.support:cardview-v7:${supportVersion}"
     compile "com.android.support:support-annotations:${supportVersion}"
 
     compile "com.github.bumptech.glide:glide:${glideVersion}"
@@ -203,6 +205,8 @@ dependencies {
 
     compile "io.reactivex:rxjava:${rxJavaVersion}"
     compile "io.reactivex:rxandroid:${rxAndroidVersion}"
+    compile "io.reactivex:rxkotlin:${rxKotlinVersion}"
+
 
     compile "com.squareup.okhttp:okhttp:${okHttpVersion}"
     compile "com.squareup.okhttp:logging-interceptor:${okHttpLoggingVersion}"
