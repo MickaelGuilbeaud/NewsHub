@@ -2,7 +2,9 @@ package com.newshub.presentation.news.newslist.views.fragments
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.newshub.R
@@ -15,13 +17,15 @@ import com.newshub.presentation.news.newslist.adapters.NewsAdapter
 import com.newshub.presentation.news.newslist.presenters.INewsListPresenter
 import com.newshub.presentation.news.newslist.views.INewsListView
 import kotlinx.android.synthetic.main.fragment_news_list.*
+import kotlinx.android.synthetic.main.toolbar.*
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
 /**
  * Created by mickaelg on 18/02/2016.
  */
-class NewsListFragment : BaseFragment(), INewsListView {
+class NewsListFragment : BaseFragment(), INewsListView, Toolbar.OnMenuItemClickListener {
 
     // region Properties
 
@@ -85,6 +89,8 @@ class NewsListFragment : BaseFragment(), INewsListView {
     }
 
     private fun initUI() {
+        initToolbar()
+
         // Init the RecyclerView
         val llManager = LinearLayoutManager(activity)
         llManager.orientation = LinearLayoutManager.VERTICAL
@@ -98,6 +104,31 @@ class NewsListFragment : BaseFragment(), INewsListView {
     }
 
     // endregion
+
+
+    // region Toolbar
+
+    private fun initToolbar() {
+        toolbar.inflateMenu(R.menu.menu_fragment_news_list)
+        toolbar.setOnMenuItemClickListener(this)
+        toolbar.title = getString(R.string.app_name)
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_customize -> {
+                // TODO: Show customize view
+                Timber.d("Customize menu item clicked")
+                return true
+            }
+            else -> {
+                return super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
+    // endregion
+
 
     // region INewsListView implementation
 
