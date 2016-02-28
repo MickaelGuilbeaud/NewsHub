@@ -19,7 +19,7 @@ constructor(private val getNewsListInteractor: GetNewsListInteractor) : INewsLis
 
     // region Properties
 
-    private var newsListView: INewsListView? = null
+    private lateinit var newsListView: INewsListView
 
     private val newsModelDataMapper = NewsModelDataMapper()
 
@@ -46,7 +46,7 @@ constructor(private val getNewsListInteractor: GetNewsListInteractor) : INewsLis
     // region Business methods
 
     private fun showNewsList(newsList: List<NewsModel>) {
-        newsListView?.showNewsList(newsList)
+        newsListView.showNewsList(newsList)
     }
 
     // endregion

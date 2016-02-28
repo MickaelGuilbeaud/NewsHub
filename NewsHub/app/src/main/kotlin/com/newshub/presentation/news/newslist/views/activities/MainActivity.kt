@@ -8,7 +8,7 @@ import com.newshub.presentation.news.newslist.views.fragments.NewsListFragment
 /**
  * Created by mickaelg on 11/02/2016.
  */
-class NewsListActivity : BaseActivity() {
+class MainActivity : BaseActivity() {
 
     // region Lifecycle
 
