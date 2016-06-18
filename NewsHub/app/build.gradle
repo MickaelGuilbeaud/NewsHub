@@ -17,6 +17,7 @@ apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    mavenCentral()
 }
 
 //def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
@@ -28,13 +29,13 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
 
     defaultConfig {
         applicationId "com.newshub"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 24
 
         def versionMajor = 0
         def versionMinor = 0
@@ -141,14 +142,14 @@ kapt {
 
 ext {
     // Android
-    androidBuildToolsVersion = "23.0.3"
+    androidBuildToolsVersion = "24.0.0"
     androidMinSdkVersion = 16
-    androidTargetSdkVersion = 23
-    androidCompileSdkVersion = 23
+    androidTargetSdkVersion = 24
+    androidCompileSdkVersion = 24
 
     // Libraries versions
     // Base
-    supportVersion = '23.3.0'
+    supportVersion = '24.0.0'
 
     // Images
     glideVersion = '3.7.0'
